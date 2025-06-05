@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  bitcoin:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BITCOIN_VERSION: "29.0"  # set desired version here
+    container_name: bitcoin-node
+    ports:
+      - "38332:38332"  # RPC
+      - "38333:38333"
+      - "38334:38334"
+    volumes:
+      - .bitcoin:/home/bitcoin/.bitcoin
+    environment:
+      BITCOIN_VERSION: "29.0"
+    #entrypoint: ["/entrypoint.sh"]
+    #command: ["bitcoind"]
+    #restart: unless-stopped
