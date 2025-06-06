@@ -4,31 +4,27 @@ ARG BITCOIN_VERSION
 ENV PATH=/opt/bitcoin-${BITCOIN_VERSION}/bin:$PATH
 
 RUN apt-get update -y \
-  && apt-get install -y curl gosu \
+  && apt-get install -y curl ca-certificates \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+ARG USERID=1000
+ARG GROUPID=1000
+RUN groupadd -g $GROUPID bitcoin && \
+  useradd -u $USERID -g bitcoin -m -s /bin/bash bitcoin
 
 RUN SYS_ARCH="$(uname -m)" \
   && curl -SLO https://bitcoincore.org/bin/bitcoin-core-${BITCOIN_VERSION}/bitcoin-${BITCOIN_VERSION}-${SYS_ARCH}-linux-gnu.tar.gz \
   && tar -xzf *.tar.gz -C /opt \
   && rm *.tar.gz
 
-RUN curl -SLO https://raw.githubusercontent.com/bitcoin/bitcoin/master/contrib/completions/bash/bitcoin-cli.bash \
-  && mkdir /etc/bash_completion.d \
-  && mv bitcoin-cli.bash /etc/bash_completion.d/bitcoin-cli.bash-completion \
-  && curl -SLO https://raw.githubusercontent.com/scop/bash-completion/master/bash_completion \
-  && mv bash_completion /usr/share/bash-completion/
-
-COPY docker-entrypoint.sh /entrypoint.sh
-COPY bashrc /home/bitcoin/.bashrc
 COPY bitcoin.conf /home/bitcoin/.bitcoin/bitcoin.conf
 
-RUN chmod a+x /entrypoint.sh
+RUN chown -R bitcoin:bitcoin /home/bitcoin
+
 VOLUME ["/home/bitcoin/.bitcoin"]
 
-EXPOSE 38333 38333 38334
+EXPOSE 38333 18443 38334
 
-ENTRYPOINT ["/entrypoint.sh"]
-
+USER bitcoin
 WORKDIR /home/bitcoin
-# CMD ["bitcoind"]

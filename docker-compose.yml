@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   bitcoin:
     build:
@@ -13,9 +11,6 @@ services:
       - "38333:38333"
       - "38334:38334"
     volumes:
-      - .bitcoin:/home/bitcoin/.bitcoin
+      - .bitcoin:/home/student/.bitcoin
     environment:
       BITCOIN_VERSION: "29.0"
-    #entrypoint: ["/entrypoint.sh"]
-    #command: ["bitcoind"]
-    #restart: unless-stopped
