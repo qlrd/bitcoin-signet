@@ -10,21 +10,19 @@ RUN apt-get update -y \
 
 ARG USERID=1000
 ARG GROUPID=1000
-RUN groupadd -g $GROUPID bitcoin && \
-  useradd -u $USERID -g bitcoin -m -s /bin/bash bitcoin
+RUN groupadd -g $GROUPID student && \
+  useradd -u $USERID -g student -m -s /bin/bash student
 
 RUN SYS_ARCH="$(uname -m)" \
   && curl -SLO https://bitcoincore.org/bin/bitcoin-core-${BITCOIN_VERSION}/bitcoin-${BITCOIN_VERSION}-${SYS_ARCH}-linux-gnu.tar.gz \
   && tar -xzf *.tar.gz -C /opt \
   && rm *.tar.gz
 
-COPY bitcoin.conf /home/bitcoin/.bitcoin/bitcoin.conf
+RUN chown -R student:student /home/student
 
-RUN chown -R bitcoin:bitcoin /home/bitcoin
+VOLUME ["/home/student/.bitcoin"]
 
-VOLUME ["/home/bitcoin/.bitcoin"]
+EXPOSE 38332 38333 38334
 
-EXPOSE 38333 18443 38334
-
-USER bitcoin
-WORKDIR /home/bitcoin
+USER student
+WORKDIR /home/student

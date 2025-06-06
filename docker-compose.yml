@@ -1,15 +1,15 @@
 services:
-  bitcoin:
+  bitcoin-node:
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        BITCOIN_VERSION: "29.0"  # set desired version here
+        BITCOIN_VERSION: "29.0"
     container_name: bitcoin-node
     ports:
       - "38332:38332"  # RPC
-      - "38333:38333"
-      - "38334:38334"
+      - "38333:38333"  # P2P
+      - "38334:38334"  # P2P local
     volumes:
       - .bitcoin:/home/student/.bitcoin
     environment:
